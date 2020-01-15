@@ -1,4 +1,4 @@
-package com.trueeducation.inout
+package com.trueedu.inout
 
 import org.junit.Test
 

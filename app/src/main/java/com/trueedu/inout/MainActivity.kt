@@ -1,4 +1,4 @@
-package com.trueeducation.inout
+package com.trueedu.inout
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
