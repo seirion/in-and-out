@@ -45,18 +45,18 @@ class MainActivity : AppCompatActivity() {
         }
 
         private inner class HeaderViewHolder(view: View) : ViewHolder(view) {
-            override fun bind(data: Int, position: Int) {
+            override fun bind(record: InOutRecord, position: Int) {
                 root.setOnClickListener { Log.d(TAG, "click") }
             }
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.bind(position, position)
+            holder.bind(data[position], position)
         }
 
         open class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             protected val root = view
-            open fun bind(data: Int, position: Int) {}
+            open fun bind(record: InOutRecord, position: Int) {}
         }
     }
 
