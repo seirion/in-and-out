@@ -4,10 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="50dp"
-    android:background="#dcb6e1"
-    android:orientation="vertical">
+    android:layout_marginBottom="1px"
+    android:orientation="vertical"
+    tools:background="#dcb6e1">
 
-    <TextView
+<TextView
+        android:id="@+id/inoutIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"

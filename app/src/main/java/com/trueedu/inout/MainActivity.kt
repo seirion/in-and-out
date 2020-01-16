@@ -1,12 +1,14 @@
 package com.trueedu.inout
 
 import android.content.Context
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.trueedu.inout.db.InOut
@@ -64,7 +66,17 @@ class MainActivity : AppCompatActivity() {
 
         private inner class HeaderViewHolder(view: View) : ViewHolder(view) {
             override fun bind(record: InOutRecord, position: Int) {
+                root.setBackgroundColor(
+                    if (record.inOut == InOut.IN) Color.rgb(220, 181, 255)
+                    else Color.rgb(182, 187, 222)
+                )
                 root.setOnClickListener { Log.d(TAG, "click") }
+                root.findViewById<TextView>(R.id.inoutIcon).let {
+                    it.setBackgroundResource(
+                        if (record.inOut == InOut.IN) R.drawable.button_in
+                        else R.drawable.button_out
+                    )
+                }
             }
         }
 
