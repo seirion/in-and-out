@@ -12,9 +12,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.trueedu.inout.db.InOut
 import com.trueedu.inout.db.InOutRecord
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var adapter: Adapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -25,16 +27,19 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG, "initUi()")
         recyclerView.layoutManager =
             LinearLayoutManager(applicationContext, LinearLayoutManager.VERTICAL, false)
-        recyclerView.adapter = Adapter(applicationContext, listOf(InOutRecord(InOut.IN, 0L)))
+        adapter = Adapter(applicationContext, mutableListOf(InOutRecord(InOut.IN, 0L)))
+        recyclerView.adapter = adapter
 
         inButton.setOnClickListener {
             Log.d(TAG, "click inButton")
+            adapter.put(InOutRecord(InOut.IN, Calendar.getInstance().timeInMillis))
+            adapter.notifyDataSetChanged()
         }
     }
 
     private class Adapter(
         applicationContext: Context,
-        private val data: List<InOutRecord>
+        private val data: MutableList<InOutRecord>
     ) : RecyclerView.Adapter<Adapter.ViewHolder>() {
 
         private val inflater = LayoutInflater.from(applicationContext)!!
@@ -46,6 +51,10 @@ class MainActivity : AppCompatActivity() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view = inflater.inflate(R.layout.item_inout_record, parent, false)
             return HeaderViewHolder(view)
+        }
+
+        fun put(record: InOutRecord) {
+            data.add(record)
         }
 
         private inner class HeaderViewHolder(view: View) : ViewHolder(view) {
