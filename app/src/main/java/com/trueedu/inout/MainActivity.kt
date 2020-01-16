@@ -1,6 +1,6 @@
 package com.trueedu.inout
 
-import android.app.Activity
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.trueedu.inout.db.InOut
+import com.trueedu.inout.db.InOutRecord
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -21,21 +23,24 @@ class MainActivity : AppCompatActivity() {
 
     private fun initUi() {
         Log.d(TAG, "initUi()")
-        val layoutManager = LinearLayoutManager(applicationContext, LinearLayoutManager.VERTICAL, false)
-        recyclerView.layoutManager = layoutManager
-        recyclerView.adapter = Adapter(this)
+        recyclerView.layoutManager =
+            LinearLayoutManager(applicationContext, LinearLayoutManager.VERTICAL, false)
+        recyclerView.adapter = Adapter(applicationContext, listOf(InOutRecord(InOut.IN, 0L)))
     }
 
-    private class Adapter(private val activity: Activity) : RecyclerView.Adapter<Adapter.ViewHolder>() {
-        private val inflater = LayoutInflater.from(activity.applicationContext)!!
+    private class Adapter(
+        applicationContext: Context,
+        private val data: List<InOutRecord>
+    ) : RecyclerView.Adapter<Adapter.ViewHolder>() {
 
-        override fun getItemCount() = 1
+        private val inflater = LayoutInflater.from(applicationContext)!!
 
-        override fun getItemViewType(position: Int) =
-            if (position == 0) 0 else 1
+        override fun getItemCount() = data.size
+
+        override fun getItemViewType(position: Int) = 0
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val view = inflater.inflate(R.layout.item_header, parent, false)
+            val view = inflater.inflate(R.layout.item_inout_record, parent, false)
             return HeaderViewHolder(view)
         }
 
