@@ -35,6 +35,11 @@ class MainActivity : AppCompatActivity() {
             adapter.put(InOutRecord(InOut.IN, Calendar.getInstance().timeInMillis))
             adapter.notifyDataSetChanged()
         }
+        outButton.setOnClickListener {
+            Log.d(TAG, "click outButton")
+            adapter.put(InOutRecord(InOut.OUT, Calendar.getInstance().timeInMillis))
+            adapter.notifyDataSetChanged()
+        }
     }
 
     private class Adapter(

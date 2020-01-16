@@ -4,14 +4,14 @@
         <layer-list>
             <item>
                 <shape android:shape="oval">
-                    <solid android:color="#5c1788"/>
+                    <solid android:color="#2c358e"/>
                     <size android:width="@dimen/inout_button_size" android:height="@dimen/inout_button_size" />
                 </shape>
             </item>
             <item>
                 <bitmap
                     android:gravity="center"
-                    android:src="@drawable/ic_in_black"/>
+                    android:src="@drawable/ic_out_black"/>
             </item>
         </layer-list>
     </item>
@@ -19,14 +19,14 @@
         <layer-list>
             <item>
                 <shape android:shape="oval">
-                    <solid android:color="#80249c"/>
+                    <solid android:color="#3945a5"/>
                     <size android:width="@dimen/inout_button_size" android:height="@dimen/inout_button_size" />
                 </shape>
             </item>
             <item>
                 <bitmap
                     android:gravity="center"
-                    android:src="@drawable/ic_in_black"/>
+                    android:src="@drawable/ic_out_black"/>
             </item>
         </layer-list>
     </item>
