@@ -26,6 +26,10 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager =
             LinearLayoutManager(applicationContext, LinearLayoutManager.VERTICAL, false)
         recyclerView.adapter = Adapter(applicationContext, listOf(InOutRecord(InOut.IN, 0L)))
+
+        inButton.setOnClickListener {
+            Log.d(TAG, "click inButton")
+        }
     }
 
     private class Adapter(
