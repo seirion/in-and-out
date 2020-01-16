@@ -18,6 +18,7 @@
         android:background="@drawable/ic_in_black" />
 
     <TextView
+        android:id="@+id/dateTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"

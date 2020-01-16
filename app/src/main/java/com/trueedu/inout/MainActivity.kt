@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.trueedu.inout.db.InOut
 import com.trueedu.inout.db.InOutRecord
+import com.trueedu.inout.utils.toDateString
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
@@ -76,6 +77,9 @@ class MainActivity : AppCompatActivity() {
                         if (record.inOut == InOut.IN) R.drawable.button_in
                         else R.drawable.button_out
                     )
+                }
+                root.findViewById<TextView>(R.id.dateTextView).let {
+                    it.text = toDateString(record.timestamp)
                 }
             }
         }
