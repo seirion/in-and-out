@@ -1,5 +1,6 @@
 package com.trueedu.inout
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -12,7 +13,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.trueedu.inout.db.InOut
 import com.trueedu.inout.db.InOutRecord
+import com.trueedu.inout.db.InOutRecordBase
 import com.trueedu.inout.utils.toDateString
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
@@ -22,14 +27,25 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        initUi()
+        init()
     }
 
-    private fun initUi() {
+    @SuppressLint("CheckResult")
+    private fun init() {
+        Single.fromCallable { InOutRecordBase.getInstance(applicationContext) }
+            .map { it.inOutRecordDao().getAll() }
+            .map { it.toMutableList() }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { Log.d(TAG, "load records") }
+            .subscribe({ initUi(it) }, { it.printStackTrace() /* ignore exceptions*/ })
+    }
+
+    private fun initUi(records: MutableList<InOutRecord>) {
         Log.d(TAG, "initUi()")
         recyclerView.layoutManager =
             LinearLayoutManager(applicationContext, LinearLayoutManager.VERTICAL, false)
-        adapter = Adapter(applicationContext, mutableListOf(InOutRecord(InOut.IN, 0L)))
+        adapter = Adapter(applicationContext, records)
         recyclerView.adapter = adapter
 
         inButton.setOnClickListener {
