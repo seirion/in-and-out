@@ -12,18 +12,22 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.jakewharton.rxbinding3.view.clicks
 import com.trueedu.inout.db.InOut
 import com.trueedu.inout.db.InOutRecord
 import com.trueedu.inout.db.InOutRecordBase
+import com.trueedu.inout.rx.ActivityLifecycle
+import com.trueedu.inout.rx.RxAppCompatActivity
 import com.trueedu.inout.utils.toDateString
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : RxAppCompatActivity() {
 
     private lateinit var adapter: Adapter
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,6 +47,7 @@ class MainActivity : AppCompatActivity() {
             .subscribe({ initUi(it) }, { it.printStackTrace() /* ignore exceptions*/ })
     }
 
+    @SuppressLint("CheckResult")
     private fun initUi(records: MutableList<InOutRecord>) {
         Log.d(TAG, "initUi()")
         recyclerView.layoutManager =
@@ -53,14 +58,21 @@ class MainActivity : AppCompatActivity() {
         val itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallback(adapter))
         itemTouchHelper.attachToRecyclerView(recyclerView)
 
-        inButton.setOnClickListener {
-            Log.d(TAG, "click inButton")
-            putInOutRecord(InOut.IN)
-        }
-        outButton.setOnClickListener {
-            Log.d(TAG, "click outButton")
-            putInOutRecord(InOut.OUT)
-        }
+        inButton.clicks()
+            .takeUntil(getLifecycleSignal(ActivityLifecycle.DESTROY))
+            .throttleFirst(2, TimeUnit.SECONDS)
+            .subscribe({
+                Log.d(TAG, "click inButton")
+                putInOutRecord(InOut.IN)
+            }, {})
+
+        outButton.clicks()
+            .takeUntil(getLifecycleSignal(ActivityLifecycle.DESTROY))
+            .throttleFirst(2, TimeUnit.SECONDS)
+            .subscribe({
+                Log.d(TAG, "click inButton")
+                putInOutRecord(InOut.OUT)
+            }, {})
     }
 
     @SuppressLint("CheckResult")
