@@ -2,13 +2,14 @@ package com.trueedu.inout
 
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.trueedu.inout.db.InOut
@@ -20,6 +21,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -45,8 +47,11 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG, "initUi()")
         recyclerView.layoutManager =
             LinearLayoutManager(applicationContext, LinearLayoutManager.VERTICAL, false)
-        adapter = Adapter(applicationContext, records)
+        adapter = Adapter(applicationContext, records, this::deleteInOutRecord)
         recyclerView.adapter = adapter
+
+        val itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallback(adapter))
+        itemTouchHelper.attachToRecyclerView(recyclerView)
 
         inButton.setOnClickListener {
             Log.d(TAG, "click inButton")
@@ -68,9 +73,18 @@ class MainActivity : AppCompatActivity() {
             .subscribe( { it.inOutRecordDao().insert(record) }, {})
     }
 
-    private class Adapter(
+    @SuppressLint("CheckResult")
+    private fun deleteInOutRecord(record: InOutRecord) {
+        adapter.notifyDataSetChanged()
+        Single.fromCallable { InOutRecordBase.getInstance(applicationContext) }
+            .subscribeOn(Schedulers.io())
+            .subscribe( { it.inOutRecordDao().delete(record) }, {})
+    }
+
+    class Adapter(
         applicationContext: Context,
-        private val data: MutableList<InOutRecord>
+        private val data: MutableList<InOutRecord>,
+        private val deleteCallback: (InOutRecord) -> Unit
     ) : RecyclerView.Adapter<Adapter.ViewHolder>() {
 
         private val inflater = LayoutInflater.from(applicationContext)!!
@@ -86,6 +100,13 @@ class MainActivity : AppCompatActivity() {
 
         fun put(record: InOutRecord) {
             data.add(record)
+        }
+
+        fun deleteItem(position: Int) {
+            val record = data[position]
+            data.removeAt(position)
+            notifyDataSetChanged()
+            deleteCallback(record)
         }
 
         private inner class HeaderViewHolder(view: View) : ViewHolder(view) {
@@ -117,6 +138,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    class SwipeToDeleteCallback(private val adapter: Adapter) :
+        ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+        override fun onMove(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            target: RecyclerView.ViewHolder
+        ): Boolean {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+            val position = viewHolder.adapterPosition
+            adapter.deleteItem(position)
+        }
+    }
     companion object {
         private val TAG = MainActivity::class.java.simpleName
     }
