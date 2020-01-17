@@ -50,14 +50,22 @@ class MainActivity : AppCompatActivity() {
 
         inButton.setOnClickListener {
             Log.d(TAG, "click inButton")
-            adapter.put(InOutRecord(InOut.IN, Calendar.getInstance().timeInMillis))
-            adapter.notifyDataSetChanged()
+            putInOutRecord(InOut.IN)
         }
         outButton.setOnClickListener {
             Log.d(TAG, "click outButton")
-            adapter.put(InOutRecord(InOut.OUT, Calendar.getInstance().timeInMillis))
-            adapter.notifyDataSetChanged()
+            putInOutRecord(InOut.OUT)
         }
+    }
+
+    @SuppressLint("CheckResult")
+    private fun putInOutRecord(inOut: InOut) {
+        val record = InOutRecord(inOut, Calendar.getInstance().timeInMillis)
+        adapter.put(record)
+        adapter.notifyDataSetChanged()
+        Single.fromCallable { InOutRecordBase.getInstance(applicationContext) }
+            .subscribeOn(Schedulers.io())
+            .subscribe( { it.inOutRecordDao().insert(record) }, {})
     }
 
     private class Adapter(
