@@ -103,8 +103,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         fun deleteItem(position: Int) {
-            val record = data[position]
-            data.removeAt(position)
+            val index = data.size - position - 1
+            val record = data[index]
+            data.removeAt(index)
             notifyDataSetChanged()
             deleteCallback(record)
         }
@@ -116,20 +117,16 @@ class MainActivity : AppCompatActivity() {
                     else R.drawable.bg_round_out
                 )
                 root.setOnClickListener { Log.d(TAG, "click") }
-                root.findViewById<TextView>(R.id.inoutIcon).let {
-                    it.setBackgroundResource(
-                        if (record.inOut == InOut.IN) R.drawable.button_in
-                        else R.drawable.button_out
-                    )
-                }
-                root.findViewById<TextView>(R.id.dateTextView).let {
-                    it.text = toDateString(record.timestamp)
-                }
+                root.findViewById<TextView>(R.id.inoutIcon).setBackgroundResource(
+                    if (record.inOut == InOut.IN) R.drawable.button_in
+                    else R.drawable.button_out
+                )
+                root.findViewById<TextView>(R.id.dateTextView).text = toDateString(record.timestamp)
             }
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.bind(data[position], position)
+            holder.bind(data[data.size - position - 1], position)
         }
 
         open class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
