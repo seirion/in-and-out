@@ -41,7 +41,8 @@ class InOutAppWidgetProvider : AppWidgetProvider() {
             .subscribe( { it.inOutRecordDao().insert(record) }, {})
 
         val views = RemoteViews(context.packageName, R.layout.app_widget )
-        views.setInt(R.id.widgetRoot, "setBackgroundColor", Color.RED)
+        val bgDrawable = if (inOut == InOut.IN) R.drawable.bg_round_in else R.drawable.bg_round_out
+        views.setInt(R.id.widgetRoot, "setBackgroundResource", bgDrawable)
 
         val appWidget = ComponentName(context, InOutAppWidgetProvider::class.java)
         val appWidgetManager = AppWidgetManager.getInstance(context)
