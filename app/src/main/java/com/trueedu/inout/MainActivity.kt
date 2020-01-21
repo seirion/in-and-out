@@ -22,6 +22,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
+import java.lang.NullPointerException
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -40,6 +41,10 @@ class MainActivity : RxAppCompatActivity() {
         super.onStart()
         // FIXME: duplication when very after it created
         loadData()
+            .map {
+                if (adapter == null) throw NullPointerException()
+                else it
+            }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 adapter.data = it
