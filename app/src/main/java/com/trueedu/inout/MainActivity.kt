@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -37,13 +36,30 @@ class MainActivity : RxAppCompatActivity() {
     }
 
     @SuppressLint("CheckResult")
-    private fun init() {
-        Single.fromCallable { InOutRecordBase.getInstance(applicationContext) }
+    override fun onStart() {
+        super.onStart()
+        // FIXME: duplication when very after it created
+        loadData()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                adapter.data = it
+                adapter.notifyDataSetChanged()
+            }, {})
+    }
+
+    @SuppressLint("CheckResult")
+    private fun loadData(): Single<MutableList<InOutRecord>> {
+        return Single.fromCallable { InOutRecordBase.getInstance(applicationContext) }
             .map { it.inOutRecordDao().getAll() }
             .map { it.toMutableList() }
             .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { Log.d(TAG, "load records") }
+    }
+
+    @SuppressLint("CheckResult")
+    private fun init() {
+        loadData()
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ initUi(it) }, { it.printStackTrace() /* ignore exceptions*/ })
     }
 
@@ -95,7 +111,7 @@ class MainActivity : RxAppCompatActivity() {
 
     class Adapter(
         applicationContext: Context,
-        private val data: MutableList<InOutRecord>,
+        var data: MutableList<InOutRecord>,
         private val deleteCallback: (InOutRecord) -> Unit
     ) : RecyclerView.Adapter<Adapter.ViewHolder>() {
 
