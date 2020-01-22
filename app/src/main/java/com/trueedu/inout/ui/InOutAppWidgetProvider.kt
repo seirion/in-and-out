@@ -7,7 +7,6 @@ import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.util.Log
 import android.widget.RemoteViews
 import com.trueedu.inout.MainActivity
@@ -60,6 +59,7 @@ class InOutAppWidgetProvider : AppWidgetProvider() {
     private fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
         val pendingIntent: PendingIntent = Intent(context, MainActivity::class.java)
             .let { intent ->
+                intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
                 PendingIntent.getActivity(context, 0, intent, 0)
             }
         val inIntent: PendingIntent = Intent(context, InOutAppWidgetProvider::class.java)
