@@ -1,12 +1,15 @@
 package com.trueedu.inout
 
 import android.annotation.SuppressLint
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RemoteViews
 import android.widget.TextView
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,6 +20,7 @@ import com.trueedu.inout.db.InOutRecord
 import com.trueedu.inout.db.InOutRecordBase
 import com.trueedu.inout.rx.ActivityLifecycle
 import com.trueedu.inout.rx.RxAppCompatActivity
+import com.trueedu.inout.ui.InOutAppWidgetProvider
 import com.trueedu.inout.utils.toDateString
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -104,6 +108,18 @@ class MainActivity : RxAppCompatActivity() {
         Single.fromCallable { InOutRecordBase.getInstance(applicationContext) }
             .subscribeOn(Schedulers.io())
             .subscribe( { it.inOutRecordDao().insert(record) }, {})
+        updateWidget(inOut)
+    }
+
+    private fun updateWidget(inOut: InOut) {
+        Log.d(TAG, "updateWidget: $inOut")
+        val views = RemoteViews(packageName, R.layout.app_widget )
+        val bgDrawable = if (inOut == InOut.IN) R.drawable.bg_round_in else R.drawable.bg_round_out
+        views.setInt(R.id.widgetRoot, "setBackgroundResource", bgDrawable)
+
+        val appWidget = ComponentName(application, InOutAppWidgetProvider::class.java)
+        val appWidgetManager = AppWidgetManager.getInstance(applicationContext)
+        appWidgetManager.updateAppWidget(appWidget, views)
     }
 
     @SuppressLint("CheckResult")
