@@ -144,7 +144,7 @@ class MainActivity : RxAppCompatActivity() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view = inflater.inflate(R.layout.item_inout_record, parent, false)
-            return HeaderViewHolder(view)
+            return ItemViewHolder(view)
         }
 
         fun put(record: InOutRecord) {
@@ -159,7 +159,7 @@ class MainActivity : RxAppCompatActivity() {
             deleteCallback(record)
         }
 
-        private inner class HeaderViewHolder(view: View) : ViewHolder(view) {
+        private inner class ItemViewHolder(view: View) : ViewHolder(view) {
             override fun bind(record: InOutRecord, position: Int) {
                 root.setBackgroundResource(
                     if (record.inOut == InOut.IN) R.drawable.bg_round_in
